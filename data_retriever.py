@@ -14,12 +14,18 @@ if not API_KEY:
     print("❌ ERREUR CRITIQUE : La clé API n'a pas été trouvée dans le fichier .env")
     exit()
 
-START_DATE = "2025-12-03"
 REGION_ROUTING = "europe"  # Pour Account-V1 (Riot ID)
 PLATFORM_ROUTING = "euw1"  # Pour Summoner-V4 et League-V4 (EUW)
 PATH_FILE = "static/data.json"
 DATE_DEBUT_EVENT = "02/12/2025 08:00"
+DATE_FIN_EVENT = "03/12/2025 22:45"
 DPM_URL = "https://dpm.lol/"
+
+start_dt = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
+end_dt = datetime.strptime(DATE_FIN_EVENT, "%d/%m/%Y %H:%M")
+
+START_TIMESTAMP = int(start_dt.timestamp())
+END_TIMESTAMP = int(end_dt.timestamp())
 
 dt_obj = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
 START_TIMESTAMP = int(dt_obj.timestamp())
@@ -93,6 +99,24 @@ def save_securely(data):
 
 
 while True:
+    if time.time() > END_TIMESTAMP:
+        print("\n--- 🛑 L'ÉVÉNEMENT EST TERMINÉ ! ---")
+        
+        # Sauvegarde d'archive
+        final_data = load_data()
+        nom_fichier = f"ARCHIVE_EVENT_{int(time.time())}.json"
+        chemin_archive = os.path.join("/archive", nom_fichier)
+        
+        save_securely(final_data, chemin_archive)
+        print(f"💾 Sauvegarde effectuée dans : {chemin_archive}")
+        
+        # D. Reset
+        save_securely({"accounts": []}, PATH_FILE)
+        print(f"🧹 Le fichier {PATH_FILE} a été vidé.")
+        
+        print("👋 Arrêt du script.")
+        break
+
     current_data = load_data()
     players_map = {f"{p['gameName']}#{p['tagLine']}": p for p in current_data["accounts"]}
     updated_accounts = []

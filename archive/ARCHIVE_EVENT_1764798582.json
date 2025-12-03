@@ -1,0 +1,312 @@
+{
+    "accounts": [
+        {
+            "gameName": "LeGreedou",
+            "tagLine": "PLATE",
+            "dpm": "https://dpm.lol/LeGreedou-PLATE",
+            "matches": [
+                {
+                    "id": "EUW1_7625209999",
+                    "champion": "Yorick",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Yorick.png",
+                    "resultat": "Victoire",
+                    "kda": "5/1/5",
+                    "lp_change": 0,
+                    "timestamp": 1764702916693
+                },
+                {
+                    "id": "EUW1_7625162969",
+                    "champion": "DrMundo",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/DrMundo.png",
+                    "resultat": "Victoire",
+                    "kda": "2/3/5",
+                    "lp_change": 0,
+                    "timestamp": 1764700899487
+                },
+                {
+                    "id": "EUW1_7625093513",
+                    "champion": "Yorick",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Yorick.png",
+                    "resultat": "Victoire",
+                    "kda": "8/2/8",
+                    "lp_change": 0,
+                    "timestamp": 1764698395614
+                }
+            ],
+            "rank_info": {
+                "tier": "GOLD",
+                "rank": "II",
+                "lp": 34,
+                "absolute_score": 1434
+            }
+        },
+        {
+            "gameName": "Byron Love",
+            "tagLine": "Yoshi",
+            "dpm": "https://dpm.lol/Byron Love-Yoshi",
+            "matches": [
+                {
+                    "id": "EUW1_7625792934",
+                    "champion": "Zac",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Zac.png",
+                    "resultat": "Défaite",
+                    "kda": "7/10/22",
+                    "lp_change": 0,
+                    "timestamp": 1764748957747
+                },
+                {
+                    "id": "EUW1_7625537762",
+                    "champion": "Zac",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Zac.png",
+                    "resultat": "Défaite",
+                    "kda": "0/7/2",
+                    "lp_change": 0,
+                    "timestamp": 1764714084965
+                },
+                {
+                    "id": "EUW1_7624787894",
+                    "champion": "Zac",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Zac.png",
+                    "resultat": "Victoire",
+                    "kda": "2/6/11",
+                    "lp_change": 0,
+                    "timestamp": 1764677848366
+                },
+                {
+                    "id": "EUW1_7624765994",
+                    "champion": "Zac",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Zac.png",
+                    "resultat": "Défaite",
+                    "kda": "11/5/11",
+                    "lp_change": 0,
+                    "timestamp": 1764675411811
+                }
+            ],
+            "rank_info": {
+                "tier": "MASTER",
+                "rank": "I",
+                "lp": 96,
+                "absolute_score": 3196
+            }
+        },
+        {
+            "gameName": "ArkoSs",
+            "tagLine": "akali",
+            "dpm": "https://dpm.lol/ArkoSs-akali",
+            "matches": [
+                {
+                    "id": "EUW1_7626814622",
+                    "champion": "Naafiri",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Naafiri.png",
+                    "resultat": "Défaite",
+                    "kda": "17/7/3",
+                    "lp_change": -20,
+                    "timestamp": 1764796202978
+                },
+                {
+                    "id": "EUW1_7626738971",
+                    "champion": "Cassiopeia",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Cassiopeia.png",
+                    "resultat": "Défaite",
+                    "kda": "5/5/1",
+                    "lp_change": 0,
+                    "timestamp": 1764793995608
+                },
+                {
+                    "id": "EUW1_7626540947",
+                    "champion": "Akali",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Akali.png",
+                    "resultat": "Victoire",
+                    "kda": "7/5/8",
+                    "lp_change": 0,
+                    "timestamp": 1764788760203
+                },
+                {
+                    "id": "EUW1_7625485637",
+                    "champion": "Akali",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Akali.png",
+                    "resultat": "Défaite",
+                    "kda": "11/7/2",
+                    "lp_change": 0,
+                    "timestamp": 1764712595132
+                }
+            ],
+            "rank_info": {
+                "tier": "DIAMOND",
+                "rank": "IV",
+                "lp": 39,
+                "absolute_score": 2439
+            }
+        },
+        {
+            "gameName": "Soreoe",
+            "tagLine": "oeoeo",
+            "dpm": "https://dpm.lol/Soreoe-oeoeo",
+            "matches": [
+                {
+                    "id": "EUW1_7625701360",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "1/13/11",
+                    "lp_change": 0,
+                    "timestamp": 1764725057588
+                },
+                {
+                    "id": "EUW1_7625680376",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "3/10/4",
+                    "lp_change": 0,
+                    "timestamp": 1764722580930
+                },
+                {
+                    "id": "EUW1_7625663012",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "2/12/4",
+                    "lp_change": 0,
+                    "timestamp": 1764720635812
+                },
+                {
+                    "id": "EUW1_7625595458",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Victoire",
+                    "kda": "5/13/15",
+                    "lp_change": 0,
+                    "timestamp": 1764717785420
+                },
+                {
+                    "id": "EUW1_7625541781",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Victoire",
+                    "kda": "3/7/8",
+                    "lp_change": 0,
+                    "timestamp": 1764714733450
+                },
+                {
+                    "id": "EUW1_7625529029",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "0/0/0",
+                    "lp_change": 0,
+                    "timestamp": 1764712821296
+                },
+                {
+                    "id": "EUW1_7625496000",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "0/5/2",
+                    "lp_change": 0,
+                    "timestamp": 1764712316045
+                },
+                {
+                    "id": "EUW1_7625461076",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "4/6/3",
+                    "lp_change": 0,
+                    "timestamp": 1764711034678
+                },
+                {
+                    "id": "EUW1_7625208210",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Victoire",
+                    "kda": "2/5/9",
+                    "lp_change": 0,
+                    "timestamp": 1764702515066
+                },
+                {
+                    "id": "EUW1_7625151689",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "2/11/21",
+                    "lp_change": 0,
+                    "timestamp": 1764701154185
+                },
+                {
+                    "id": "EUW1_7625115231",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Victoire",
+                    "kda": "0/3/10",
+                    "lp_change": 0,
+                    "timestamp": 1764698636885
+                },
+                {
+                    "id": "EUW1_7625082406",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Victoire",
+                    "kda": "5/1/10",
+                    "lp_change": 0,
+                    "timestamp": 1764697349980
+                },
+                {
+                    "id": "EUW1_7625040340",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "2/9/9",
+                    "lp_change": 0,
+                    "timestamp": 1764695884855
+                },
+                {
+                    "id": "EUW1_7625001919",
+                    "champion": "Swain",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Swain.png",
+                    "resultat": "Défaite",
+                    "kda": "2/11/17",
+                    "lp_change": 0,
+                    "timestamp": 1764693772507
+                }
+            ],
+            "rank_info": {
+                "tier": "IRON",
+                "rank": "III",
+                "lp": 55,
+                "absolute_score": 155
+            }
+        },
+        {
+            "gameName": "Gambling2Vladi",
+            "tagLine": "CANNA",
+            "dpm": "https://dpm.lol/Gambling2Vladi-CANNA",
+            "matches": [
+                {
+                    "id": "EUW1_7625796707",
+                    "champion": "Akali",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Akali.png",
+                    "resultat": "Défaite",
+                    "kda": "11/11/2",
+                    "lp_change": 0,
+                    "timestamp": 1764749882925
+                },
+                {
+                    "id": "EUW1_7625156899",
+                    "champion": "Garen",
+                    "icon": "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/Garen.png",
+                    "resultat": "Défaite",
+                    "kda": "0/6/1",
+                    "lp_change": 0,
+                    "timestamp": 1764700620194
+                }
+            ],
+            "rank_info": {
+                "tier": "GOLD",
+                "rank": "II",
+                "lp": 53,
+                "absolute_score": 1453
+            }
+        }
+    ]
+}
