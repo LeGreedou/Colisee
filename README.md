@@ -1,4 +1,4 @@
-# Collisee
+# Collisée
 
 Site web de tracking de progression League of Legends pour des évènements type marathons/LAN.
 Affiche un pannel avec les différents joueurs, les parties qui se sont déroulés dans le lapse de temps de l'évènement (résultat, gain, KDA, gain totaux, nombre de games).
