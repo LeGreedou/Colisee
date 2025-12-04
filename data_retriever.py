@@ -18,7 +18,7 @@ REGION_ROUTING = "europe"  # Pour Account-V1 (Riot ID)
 PLATFORM_ROUTING = "euw1"  # Pour Summoner-V4 et League-V4 (EUW)
 PATH_FILE = "static/data.json"
 DATE_DEBUT_EVENT = "02/12/2025 08:00"
-DATE_FIN_EVENT = "03/12/2025 22:45"
+DATE_FIN_EVENT = "04/12/2025 23:59"
 DPM_URL = "https://dpm.lol/"
 
 start_dt = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
@@ -97,21 +97,79 @@ def save_securely(data):
         os.fsync(f.fileno())
     os.replace(temp_path, PATH_FILE)
 
+def generer_recap(data):
+    """Calcule et affiche les statistiques finales de l'événement."""
+    accounts = data.get("accounts", [])
+    if not accounts:
+        print("Aucune donnée à analyser pour le récapitulatif.")
+        return
+
+    # Initialisation avec des valeurs par défaut
+    # Structure : (Nom du joueur, Valeur)
+    stats = {
+        "plus_games": (None, -1),
+        "moins_games": (None, 99999),
+        "pire_wr": (None, 101),
+        "top_lp": (None, -99999)
+    }
+    recap_msg = ""
+    for acc in accounts:
+        name = acc["gameName"]
+        matches = acc.get("matches", [])
+        nb_games = len(matches)
+        winrate = acc.get("winrate", 0)
+
+        # Calcul des LP totaux gagnés (on ignore les "?" et les erreurs)
+        total_lp_gained = 0
+        for m in matches:
+            lp = m.get("lp_change")
+            if isinstance(lp, int): # On s'assure que c'est un nombre
+                total_lp_gained += lp
+
+        # 1. Plus de parties
+        if nb_games > stats["plus_games"][1]:
+            stats["plus_games"] = (name, nb_games)
+        
+        # 2. Moins de parties
+        if nb_games < stats["moins_games"][1]:
+            stats["moins_games"] = (name, nb_games)
+
+        # 3. Pire Winrate (Il faut au moins 1 game pour être jugé, sinon c'est trop facile)
+        if nb_games > 0 and winrate < stats["pire_wr"][1]:
+            stats["pire_wr"] = (name, winrate)
+        
+        # 4. Plus de LP gagnés (au total sur la période)
+        if total_lp_gained > stats["top_lp"][1]:
+            stats["top_lp"] = (name, total_lp_gained)
+
+        recap_msg += f"{name}, games: {nb_games}, WR: {winrate}%, LP gained: {total_lp_gained} \n"
+
+    # --- AFFICHAGE DU RÉCAPITULATIF ---
+    recap_msg += (
+        "\n --- RÉCAPITULATIF FINAL DE L'EVENT --- \n"
+        f"  La Reine Salope : {stats['moins_games'][0]} ({stats['moins_games'][1]} games)\n"
+        f"  Le Fou de la Faille : {stats['plus_games'][0]} ({stats['plus_games'][1]} games)\n"
+        f"  Le Cadavre : {stats['pire_wr'][0]} ({stats['pire_wr'][1]}% WR)\n"
+        f"  Le Glorious Executionner : {stats['top_lp'][0]} ({'+' if stats['top_lp'][1] > 0 else ''}{stats['top_lp'][1]} LP)\n"
+        "----------------------------------------------\n"
+    )
+    
+    print(recap_msg)
+    nom_propre = end_dt.strftime("%Y-%m-%d_%H-%M")
+    nom_fichier = f"archive/recap_{nom_propre}.txt"
+    try:
+        with open(nom_fichier, "w", encoding="utf-8") as f:
+            f.write(recap_msg)
+        print("✅ Récapitulatif sauvegardé dans le dossier archive/")
+    except:
+        pass
 
 while True:
     if time.time() > END_TIMESTAMP:
         print("\n--- 🛑 L'ÉVÉNEMENT EST TERMINÉ ! ---")
-        
-        # Sauvegarde d'archive
-        final_data = load_data()
-        nom_fichier = f"ARCHIVE_EVENT_{int(time.time())}.json"
-        chemin_archive = os.path.join("/archive", nom_fichier)
-        
-        save_securely(final_data, chemin_archive)
-        print(f"💾 Sauvegarde effectuée dans : {chemin_archive}")
-        
-        # D. Reset
-        save_securely({"accounts": []}, PATH_FILE)
+        # Reset
+        generer_recap(load_data())
+        save_securely({"accounts": []})
         print(f"🧹 Le fichier {PATH_FILE} a été vidé.")
         
         print("👋 Arrêt du script.")
@@ -247,6 +305,20 @@ while True:
             else:
                  print(f"⚠️ Erreur Matchs pour {name}: {resp_ids.status_code}")
 
+            total_matches = len(stored_player["matches"])
+            total_wins = 0
+            
+            for m in stored_player["matches"]:
+                if m["resultat"] == "Victoire":
+                    total_wins += 1
+            
+            # On évite la division par 0 si pas de matchs
+            if total_matches > 0:
+                winrate = int((total_wins / total_matches) * 100)
+            else:
+                winrate = 0
+            
+            stored_player["winrate"] = winrate
             # Mise à jour
             stored_player["rank_info"] = {
                 "tier": tier, "rank": rank, "lp": current_lp, "absolute_score": current_absolute_score

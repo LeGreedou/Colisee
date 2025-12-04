@@ -44,7 +44,6 @@ header h1 {
 .player-card {
     background-color: var(--card-bg);
     border-radius: 12px;
-    /* On enlève la bordure grise pour un look plus "flat" */
     box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
     display: flex;
     flex-direction: column;
@@ -52,10 +51,9 @@ header h1 {
     border: 1px solid #333;
 }
 
-/* --- HEADER DE LA CARTE (Fondu) --- */
+/* --- HEADER DE LA CARTE --- */
 .card-header {
     padding: 20px;
-    /* Fond transparent pour fusionner avec la carte */
     background-color: transparent; 
     border-bottom: 1px solid #333;
 }
@@ -73,7 +71,6 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* Fond très légèrement plus sombre pour détacher subtilement les stats */
     background-color: rgba(0, 0, 0, 0.2); 
     padding: 12px;
     border-radius: 8px;
@@ -92,17 +89,20 @@ header h1 {
     color: var(--gold-color);
 }
 
+/* --- STATS SESSION (Modifié pour le Winrate) --- */
 .session-stats {
     text-align: right;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    gap: 4px; /* Petit espace entre "Games" et la ligne LP/Winrate */
 }
 
 .stat-games {
     font-size: 0.8em;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .stat-lp {
@@ -110,18 +110,23 @@ header h1 {
     font-weight: bold;
 }
 
+/* NOUVEAU : Style pour le Winrate */
+.stat-winrate {
+    font-size: 0.9em;
+    font-weight: bold;
+    /* La couleur (Vert/Rouge) est gérée par le JS, 
+       mais on met une ombre légère pour la lisibilité */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 /* --- ZONE HISTORIQUE --- */
 .match-history {
     background-color: transparent;
-    
-    /* MODIFICATION ICI : On remet du padding ! */
-    padding: 5px 5px; /* 10px haut/bas, 15px gauche/droite */
-    
+    padding: 5px 5px; 
     max-height: 180px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    /* On ajoute un petit espace entre les matchs pour faire plus aéré */
     gap: 8px; 
 }
 
@@ -143,42 +148,25 @@ header h1 {
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
     padding: 10px 15px; 
-    
-    background-color: rgba(255, 255, 255, 0.03); /* Un fond très léger pour qu'on voit la carte */
-    
-    /* MODIFICATION ICI : On arrondit la ligne elle-même */
+    background-color: rgba(255, 255, 255, 0.03); 
     border-radius: 8px; 
-    
-    /* La bordure gauche reste, mais maintenant elle va suivre l'arrondi ci-dessus */
     border-left: 4px solid transparent; 
-    
-    /* On enlève la bordure du bas, on sépare par le "gap" du parent maintenant */
     border-bottom: none; 
-    
     transition: transform 0.2s, background-color 0.2s;
 }
 
-/* Petit effet sympa : la ligne bouge un peu quand on passe la souris */
 .match-row:hover {
     background-color: rgba(255, 255, 255, 0.08);
     transform: translateX(2px);
 }
 
-/* Effet de survol léger */
-.match-row:hover {
-    background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* Dégradés subtils qui s'estompent vers la transparence */
 .match-row.win {
     border-left-color: var(--win-color);
-    /* Dégradé Vert -> Transparent */
     background: linear-gradient(90deg, rgba(45,224,165,0.1) 0%, rgba(30,30,30,0) 100%);
 }
 
 .match-row.loss {
     border-left-color: var(--loss-color);
-    /* Dégradé Rouge -> Transparent */
     background: linear-gradient(90deg, rgba(224,45,45,0.1) 0%, rgba(30,30,30,0) 100%);
 }
 
@@ -190,36 +178,24 @@ header h1 {
     justify-self: start;
 }
 
-/* --- NOUVEAU : Le cadre rond fixe --- */
 .champ-icon-wrapper {
-    width: 38px;   /* Taille fixe du cercle */
-    height: 38px;  /* Taille fixe du cercle */
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 2px solid #222; /* La bordure est sur le cadre maintenant */
-    
-    /* C'EST LA CLÉ DU ZOOM : Tout ce qui dépasse du cercle est caché */
+    border: 2px solid #222; 
     overflow: hidden; 
-    
-    /* Pour bien centrer l'image dedans */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* L'image à l'intérieur */
 .champ-icon {
-    width: 100%; /* Prend toute la place du wrapper */
+    width: 100%; 
     height: 100%;
     object-fit: cover;
-    
-    /* L'EFFET DE ZOOM */
-    /* 1.0 = taille normale. 1.2 = 20% plus gros. */
     transform: scale(1.2); 
-    
-    /* Optionnel : une petite transition si jamais tu veux animer au survol plus tard */
     transition: transform 0.3s ease;
 }
-
 
 /* MILIEU */
 .match-center {
@@ -257,29 +233,25 @@ header h1 {
 
 
 .player-name-link {
-    display: block; /* Prend toute la largeur */
+    display: block; 
     text-align: center;
     font-size: 1.5em;
     font-weight: bold;
     margin-bottom: 15px;
     margin-top: 0;
-    
-    /* On enlève le style "lien bleu moche" */
     text-decoration: none;
-    color: var(--text-main); /* Reste blanc */
+    color: var(--text-main); 
     transition: color 0.2s, transform 0.2s;
 }
 
-/* Effet au survol : Devient doré et grossit un tout petit peu */
 .player-name-link:hover {
     color: var(--gold-color);
     transform: scale(1.05);
     cursor: pointer;
 }
 
-/* Le tag #TAG reste gris même dans le lien */
 .player-name-link .player-tag {
     color: var(--text-muted);
-    font-size: 0.6em; /* Un peu plus petit par rapport au titre */
+    font-size: 0.6em; 
     vertical-align: middle;
 }

@@ -19,7 +19,6 @@ async function refreshData() {
                 totalGames = acc.matches.length;
                 acc.matches.forEach(m => {
                     // On additionne seulement si c'est un vrai nombre (pas "?")
-                    // On vérifie aussi que ce n'est pas null
                     if (m.lp_change !== "?" && m.lp_change !== null) {
                         totalLPGain += parseInt(m.lp_change);
                     }
@@ -29,6 +28,12 @@ async function refreshData() {
             // Gestion du signe + et de la couleur pour le total affiché en haut
             const signTotal = totalLPGain > 0 ? '+' : '';
             const colorTotal = totalLPGain >= 0 ? 'var(--win-color)' : 'var(--loss-color)';
+
+            // --- NOUVEAU : GESTION DU WINRATE ---
+            // On récupère le winrate calculé par Python, ou 0 par défaut
+            const winrate = acc.winrate !== undefined ? acc.winrate : 0;
+            // Couleur : Vert (#4ade80) si >= 50%, Rouge (#f87171) sinon
+            const wrColor = winrate >= 50 ? '#4ade80' : '#f87171';
 
             // --- 2. LOGIQUE D'AFFICHAGE DU RANG ---
             const apexTiers = ['MASTER', 'GRANDMASTER', 'CHALLENGER'];
@@ -96,9 +101,16 @@ async function refreshData() {
                         
                         <div class="session-stats">
                             <div class="stat-games">${totalGames} Game${totalGames > 1 ? 's' : ''}</div>
-                            <div class="stat-lp" style="color: ${colorTotal}">
-                                ${signTotal}${totalLPGain} LP
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="stat-lp" style="color: ${colorTotal}">
+                                    ${signTotal}${totalLPGain} LP
+                                </div>
+                                <div class="stat-winrate" style="color: ${wrColor}; font-weight: bold; font-size: 0.9em;">
+                                    ${winrate}% WR
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

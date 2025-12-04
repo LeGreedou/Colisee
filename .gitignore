@@ -6,6 +6,8 @@ __pycache__/
 # venv
 venv/
 
+archive/
+
 # C extensions
 *.so
 
