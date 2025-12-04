@@ -17,8 +17,8 @@ if not API_KEY:
 REGION_ROUTING = "europe"  # Pour Account-V1 (Riot ID)
 PLATFORM_ROUTING = "euw1"  # Pour Summoner-V4 et League-V4 (EUW)
 PATH_FILE = "static/data.json"
-DATE_DEBUT_EVENT = "02/12/2025 08:00"
-DATE_FIN_EVENT = "04/12/2025 23:59"
+DATE_DEBUT_EVENT = "04/12/2025 20:00"
+DATE_FIN_EVENT = "07/12/2025 23:59"
 DPM_URL = "https://dpm.lol/"
 
 start_dt = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
