@@ -20,20 +20,16 @@ DATE_DEBUT_EVENT = "30/01/2026 20:00"
 DATE_FIN_EVENT = "30/01/2026 22:20"
 DPM_URL = "https://dpm.lol/"
 
-start_dt = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
-end_dt = datetime.strptime(DATE_FIN_EVENT, "%d/%m/%Y %H:%M")
-
-START_TIMESTAMP = int(start_dt.timestamp())
-END_TIMESTAMP = int(end_dt.timestamp())
-
-
-accounts_list = [
-    {"gameName": "LeGreedou", "tagLine": "PLATE"},
-    {"gameName": "Byron Love", "tagLine": "Yoshi"},
-    {"gameName": "ArkoSs", "tagLine": "akali"},
-    {"gameName": "Soreoe", "tagLine": "oeoeo"},
-    {"gameName": "Gambling2Vladi", "tagLine": "CANNA"},
-]
+def load_config():
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            conf = json.load(f)
+            s_dt = datetime.strptime(conf["start_date"], "%d/%m/%Y %H:%M")
+            e_dt = datetime.strptime(conf["end_date"], "%d/%m/%Y %H:%M")
+            return s_dt, e_dt, int(s_dt.timestamp()), int(e_dt.timestamp())
+    except:
+        # Valeurs par défaut si le fichier n'existe pas encore
+        return None, None, 0, 0
 
 headers = {
     "X-Riot-Token": API_KEY
@@ -60,6 +56,12 @@ RANK_VALUES = {
     "I": 300,
     "": 0 # Pour les Master+ qui n'ont pas de rang I, II...
 }
+
+def get_dynamic_players():
+    if os.path.exists("players.json"):
+        with open("players.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
 
 def get_latest_version():
     try:
@@ -174,6 +176,7 @@ def generer_recap(data):
         pass
 
 while True:
+    start_dt, end_dt, START_TIMESTAMP, END_TIMESTAMP = load_config()
     if time.time() > END_TIMESTAMP:
         print("\n--- 🛑 L'ÉVÉNEMENT EST TERMINÉ ! ---")
         current_data = load_data()
@@ -186,6 +189,12 @@ while True:
     current_data = load_data()
     players_map = {f"{p['gameName']}#{p['tagLine']}": p for p in current_data["accounts"]}
     updated_accounts = []
+    accounts_list = get_dynamic_players()
+
+    if not accounts_list:
+        print("😴 Aucun joueur inscrit pour le moment. Pause de 1 min.")
+        time.sleep(60)
+        continue
 
     for account_cfg in accounts_list:
         name = account_cfg["gameName"]
