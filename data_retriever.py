@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-IMAGE_URL = "https://ddragon.leagueoflegends.com/cdn/14.1.1/img/champion/"
 API_KEY = os.getenv("RIOT_API_KEY")
 if not API_KEY:
     print("❌ ERREUR CRITIQUE : La clé API n'a pas été trouvée dans le fichier .env")
@@ -27,8 +26,6 @@ end_dt = datetime.strptime(DATE_FIN_EVENT, "%d/%m/%Y %H:%M")
 START_TIMESTAMP = int(start_dt.timestamp())
 END_TIMESTAMP = int(end_dt.timestamp())
 
-dt_obj = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
-START_TIMESTAMP = int(dt_obj.timestamp())
 
 accounts_list = [
     {"gameName": "LeGreedou", "tagLine": "PLATE"},
@@ -64,6 +61,18 @@ RANK_VALUES = {
     "": 0 # Pour les Master+ qui n'ont pas de rang I, II...
 }
 
+def get_latest_version():
+    try:
+        url = "https://ddragon.leagueoflegends.com/api/versions.json"
+        response = requests.get(url)
+        return response.json()[0]
+    except:
+        return "14.1.1"
+
+CURRENT_VERSION = get_latest_version()
+IMAGE_URL = f"https://ddragon.leagueoflegends.com/cdn/{CURRENT_VERSION}/img/champion/"
+
+
 def calculer_score_absolu(tier, rank, lp):
     """Convertit le rang complet en un score unique pour comparer facile."""
     base = TIER_VALUES.get(tier, 0)
@@ -84,8 +93,8 @@ def load_data():
             with open(PATH_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except:
-            return {"accounts": []}
-    return {"accounts": []}
+            return {"event_ended": False, "accounts": []}
+    return {"event_ended": False, "accounts": []}
 
 
 def save_securely(data):
@@ -167,12 +176,11 @@ def generer_recap(data):
 while True:
     if time.time() > END_TIMESTAMP:
         print("\n--- 🛑 L'ÉVÉNEMENT EST TERMINÉ ! ---")
-        # Reset
-        generer_recap(load_data())
-        save_securely({"accounts": []})
-        print(f"🧹 Le fichier {PATH_FILE} a été vidé.")
-        
-        print("👋 Arrêt du script.")
+        current_data = load_data()
+        current_data["event_ended"] = True # On marque la fin
+        generer_recap(current_data)
+        save_securely(current_data) # On sauvegarde les DERNIÈRES données, on ne vide pas !
+        print(f"✅ Résultats finaux figés dans {PATH_FILE}.")
         break
 
     current_data = load_data()
@@ -269,6 +277,7 @@ while True:
                         lp_per_match = round(total_diff / len(new_matches_found))
 
                     for new_id in new_matches_found:
+                        time.sleep(1.2)
                         resp_det = requests.get(f"https://{REGION_ROUTING}.api.riotgames.com/lol/match/v5/matches/{new_id}", headers=headers)
                         if resp_det.status_code == 200:
                             det = resp_det.json()
@@ -333,6 +342,10 @@ while True:
             print(f"❌ GROS CRASH sur {name}: {e}")
             if full_id in players_map: updated_accounts.append(players_map[full_id])
 
-    save_securely({"accounts": updated_accounts})
-    print("--- 💤 Pause de 5 minutes ---")
+    save_securely({
+        "event_ended": False, 
+        "accounts": updated_accounts
+    })
+
+    print("--- Pause de 5 minutes ---")
     time.sleep(300)

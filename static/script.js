@@ -5,7 +5,21 @@ async function refreshData() {
         const data = await response.json();
         const container = document.getElementById('dashboard');
         
-        container.innerHTML = ''; // On nettoie l'écran avant de reconstruire
+        container.innerHTML = ''; 
+
+        if (data.event_ended) {
+            const banner = document.createElement('div');
+            banner.className = 'end-banner';
+            banner.innerHTML = `
+                <div class="banner-content">
+                    <span class="crown">🏆</span>
+                    <h2>L'ÉVÉNEMENT EST TERMINÉ</h2>
+                    <p>Les scores sont désormais figés pour l'éternité.</p>
+                </div>
+            `;
+            // On l'insère au tout début du container ou avant
+            container.prepend(banner); 
+        }
 
         data.accounts.forEach(acc => {
             const card = document.createElement('div');
