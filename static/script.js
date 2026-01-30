@@ -21,6 +21,24 @@ async function refreshData() {
             container.prepend(banner); 
         }
 
+        // --- NOUVEAU : AFFICHAGE DU PODIUM ---
+        if (data.event_ended && data.podium) {
+            const podiumContainer = document.createElement('div');
+            podiumContainer.className = 'podium-wrapper'; 
+            
+            data.podium.forEach(role => {
+                const card = document.createElement('div');
+                card.className = `podium-card ${role.type}`;
+                card.innerHTML = `
+                    <div class="podium-title">${role.title}</div>
+                    <div class="podium-name">${role.name || '???'}</div>
+                    <div class="podium-val">${role.val}</div>
+                `;
+                podiumContainer.appendChild(card);
+            });
+            container.appendChild(podiumContainer);
+        }
+
         data.accounts.forEach(acc => {
             const card = document.createElement('div');
             card.className = 'player-card';

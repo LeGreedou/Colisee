@@ -16,8 +16,8 @@ if not API_KEY:
 REGION_ROUTING = "europe"  # Pour Account-V1 (Riot ID)
 PLATFORM_ROUTING = "euw1"  # Pour Summoner-V4 et League-V4 (EUW)
 PATH_FILE = "static/data.json"
-DATE_DEBUT_EVENT = "04/12/2025 20:00"
-DATE_FIN_EVENT = "07/12/2025 23:59"
+DATE_DEBUT_EVENT = "30/01/2026 20:00"
+DATE_FIN_EVENT = "30/01/2026 22:20"
 DPM_URL = "https://dpm.lol/"
 
 start_dt = datetime.strptime(DATE_DEBUT_EVENT, "%d/%m/%Y %H:%M")
@@ -342,9 +342,34 @@ while True:
             print(f"❌ GROS CRASH sur {name}: {e}")
             if full_id in players_map: updated_accounts.append(players_map[full_id])
 
+    plus_g = (None, -1)
+    moins_g = (None, 99999)
+    pire_w = (None, 101)
+    top_l = (None, -99999)
+
+    for acc in updated_accounts:
+        name = acc["gameName"]
+        matches = acc.get("matches", [])
+        nb_games = len(matches)
+        winrate = acc.get("winrate", 0)
+        lp_gained = sum(m.get("lp_change", 0) for m in matches if isinstance(m.get("lp_change"), int))
+
+        if nb_games > plus_g[1]: plus_g = (name, nb_games)
+        if nb_games < moins_g[1]: moins_g = (name, nb_games)
+        if nb_games > 0 and winrate < pire_w[1]: pire_w = (name, winrate)
+        if lp_gained > top_l[1]: top_l = (name, lp_gained)
+
+    podium_data = [
+        {"title": "👑 LE GLORIOUS EXECUTIONNER", "name": top_l[0], "val": f"{'+' if top_l[1]>0 else ''}{top_l[1]} LP", "type": "gold"},
+        {"title": "🤪 LE FOU DE LA FAILLE", "name": plus_g[0], "val": f"{plus_g[1]} Games", "type": "blue"},
+        {"title": "💀 LE CADAVRE", "name": pire_w[0], "val": f"{pire_w[1]}% WR", "type": "red"},
+        {"title": "👻 LA REINE SALOPE", "name": moins_g[0], "val": f"{moins_g[1]} Games", "type": "gray"}
+    ]
+
     save_securely({
-        "event_ended": False, 
-        "accounts": updated_accounts
+        "event_ended": time.time() > END_TIMESTAMP, 
+        "accounts": updated_accounts,
+        "podium": podium_data
     })
 
     print("--- Pause de 5 minutes ---")
