@@ -1,30 +1,84 @@
 import requests
 import urllib.parse
 import discord
-from discord import app_commands, EntityType, PrivacyLevel
-from discord.ext import commands
+from discord import app_commands, EntityType, PrivacyLevel, FFmpegPCMAudio, EntityType, PrivacyLevel
+from discord.ext import commands, tasks
 import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import asyncio
 
 load_dotenv()
+VOICE_CHANNEL_ID = 1445727100563886206
+MUSIC_PATH = "static/entrance.mp3"
+FFMPEG_EXE = "ffmpeg.exe" if os.path.exists("ffmpeg.exe") else "ffmpeg"
 RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 TOKEN = os.getenv("DISCORD_TOKEN")
 PATH_PLAYERS = "static/players.json"
 
+event_started_triggered = False
+
 class MyBot(commands.Bot):
     def __init__(self):
-        # On définit les intentions
         intents = discord.Intents.default()
         intents.message_content = True
         intents.members = True 
-
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
         await self.tree.sync()
-        print("✅ Commandes Slash synchronisées")
+        # On lance la vérification en arrière-plan
+        self.check_event_start.start()
+        print(f"✅ Tâche de fond lancée (FFmpeg utilisé : {FFMPEG_EXE})")
+
+    # Vérification toutes les 30 secondes
+    @tasks.loop(seconds=30)
+    async def check_event_start(self):
+        global event_started_triggered
+        
+        config_path = "static/config.json"
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                
+                # Conversion de la date du config
+                start_dt = datetime.strptime(config["start_date"], "%d/%m/%Y %H:%M")
+                now = datetime.now()
+
+                # Si l'heure est passée et qu'on n'a pas encore déclenché
+                if now >= start_dt and not event_started_triggered:
+                    event_started_triggered = True
+                    await self.launch_opening_ceremony()
+            except Exception as e:
+                print(f"Erreur lors de la vérification auto : {e}")
+
+    async def launch_opening_ceremony(self):
+        # 1. Message de guerre dans le salon textuel
+        # On cherche un salon nommé "général" ou utilise un ID précis
+        channel_text = discord.utils.get(self.get_all_channels(), name="général")
+        if channel_text:
+            await channel_text.send("⚔️ **LE COLISÉE EST OUVERT ! QUE LE MASSACRE COMMENCE !** ⚔️ @everyone")
+
+        # 2. Musique dans le salon vocal
+        voice_channel = self.get_channel(VOICE_CHANNEL_ID)
+        if voice_channel:
+            try:
+                vc = await voice_channel.connect()
+                print("🔊 Lecture de l'intro musicale...")
+                
+                # On lance la musique
+                audio_source = FFmpegPCMAudio(executable=FFMPEG_EXE, source=MUSIC_PATH)
+                vc.play(audio_source)
+                
+                # On attend 60 secondes (ajuste selon la durée de ton mp3)
+                await asyncio.sleep(60) 
+                
+                await vc.disconnect()
+                print("🔇 Cérémonie terminée, bot déconnecté.")
+            except Exception as e:
+                print(f"Erreur lors de la cérémonie vocale : {e}")
 
 bot = MyBot()
 
@@ -121,6 +175,9 @@ async def setup_event(interaction: discord.Interaction, debut: str, fin: str):
         
         start_dt = datetime.strptime(debut, "%d/%m/%Y %H:%M").replace(tzinfo=local_tz)
         end_dt = datetime.strptime(fin, "%d/%m/%Y %H:%M").replace(tzinfo=local_tz)
+
+        global event_started_triggered
+        event_started_triggered = False
         
         # 3. Sauvegarde dans config.json
         config = {

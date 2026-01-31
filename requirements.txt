@@ -2,3 +2,5 @@ flask
 requests
 python-dotenv
 discord.py
+discord.py[voice]
+pynacl
