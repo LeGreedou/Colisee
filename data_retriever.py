@@ -22,7 +22,7 @@ DPM_URL = "https://dpm.lol/"
 
 def load_config():
     try:
-        with open("config.json", "r", encoding="utf-8") as f:
+        with open("static/config.json", "r", encoding="utf-8") as f:
             conf = json.load(f)
             s_dt = datetime.strptime(conf["start_date"], "%d/%m/%Y %H:%M")
             e_dt = datetime.strptime(conf["end_date"], "%d/%m/%Y %H:%M")
@@ -58,8 +58,8 @@ RANK_VALUES = {
 }
 
 def get_dynamic_players():
-    if os.path.exists("players.json"):
-        with open("players.json", "r", encoding="utf-8") as f:
+    if os.path.exists("static/players.json"):
+        with open("static/players.json", "r", encoding="utf-8") as f:
             return json.load(f)
     return []
 
@@ -290,6 +290,33 @@ while True:
                         resp_det = requests.get(f"https://{REGION_ROUTING}.api.riotgames.com/lol/match/v5/matches/{new_id}", headers=headers)
                         if resp_det.status_code == 200:
                             det = resp_det.json()
+
+                            # --- AJOUT: DÉTECTION DE REMAKE ---
+                            is_remake = False
+                            game_info = det.get('info', {})
+
+                            # Vérification A : Durée de la partie (en secondes)
+                            # Un remake dure généralement 3min + temps de vote (donc < 300s est safe)
+                            if game_info.get('gameDuration', 1000) < 300:
+                                is_remake = True
+
+                            # Vérification B : Flag d'abandon précoce (plus précis)
+                            # On regarde si n'importe quel joueur a le flag "gameEndedInEarlySurrender"
+                            if not is_remake: # Si la durée n'a pas suffit, on check les participants
+                                participants = game_info.get('participants', [])
+                                for p in participants:
+                                    if p.get('gameEndedInEarlySurrender', False):
+                                        is_remake = True
+                                        break
+                            
+                            # SI C'EST UN REMAKE, ON SAUTE LE TOUR
+                            if is_remake:
+                                print(f"⏩ Match {new_id} ignoré (REMAKE détecté)")
+                                # On ajoute le match id dans une liste spéciale pour ne pas le retélécharger ? 
+                                # Pour l'instant on fait simple : on l'ignore (il sera rechecké au prochain tour mais c'est pas grave)
+                                continue 
+                            # ----------------------------------
+
                             part = next((p for p in det["info"]["participants"] if p["puuid"] == puuid), None)
                             
                             if part:
@@ -383,4 +410,3 @@ while True:
 
     print("--- Pause de 5 minutes ---")
     time.sleep(300)
-    
