@@ -21,15 +21,31 @@ DATE_FIN_EVENT = "30/01/2026 22:20"
 DPM_URL = "https://dpm.lol/"
 
 def load_config():
+    path_config = "static/config.json"
+    
+    # 1. Auto-création si absent
+    if not os.path.exists(path_config):
+        default_conf = {
+            "start_date": "01/01/2030 12:00",
+            "end_date": "01/01/2030 13:00"
+        }
+        with open(path_config, "w", encoding="utf-8") as f:
+            json.dump(default_conf, f, indent=4)
+        print(f"🆕 Fichier {path_config} créé (dates par défaut en 2030).")
+
+    # 2. Lecture normale
     try:
-        with open("static/config.json", "r", encoding="utf-8") as f:
+        with open(path_config, "r", encoding="utf-8") as f:
             conf = json.load(f)
             s_dt = datetime.strptime(conf["start_date"], "%d/%m/%Y %H:%M")
             e_dt = datetime.strptime(conf["end_date"], "%d/%m/%Y %H:%M")
             return s_dt, e_dt, int(s_dt.timestamp()), int(e_dt.timestamp())
-    except:
-        # Valeurs par défaut si le fichier n'existe pas encore
-        return None, None, 0, 0
+            
+    except Exception as e:
+        print(f"❌ Erreur lecture config : {e}")
+        # En cas de crash, on renvoie le futur pour ne pas stopper le script
+        future = int(time.time()) + 999999
+        return None, None, future, future
 
 headers = {
     "X-Riot-Token": API_KEY
@@ -58,10 +74,24 @@ RANK_VALUES = {
 }
 
 def get_dynamic_players():
-    if os.path.exists("static/players.json"):
-        with open("static/players.json", "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    path = "static/players.json"
+    
+    # 1. Si le fichier n'existe pas, on le crée avec une liste vide []
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump([], f)
+        print(f"🆕 Fichier {path} créé par défaut.")
+        return []
+
+    # 2. S'il existe, lecture sécurisée
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content: return [] # Si le fichier est vide (0 octet)
+            return json.loads(content)
+    except json.JSONDecodeError:
+        print(f"⚠️ {path} est corrompu ou mal formaté. On renvoie vide.")
+        return []
 
 def get_latest_version():
     try:
