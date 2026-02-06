@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 import asyncio
+import re
 
 load_dotenv()
 VOICE_CHANNEL_ID = 1445727100563886206
@@ -92,6 +93,22 @@ def save_players(players):
     with open(PATH_PLAYERS, "w", encoding="utf-8") as f:
         json.dump(players, f, indent=4, ensure_ascii=False)
 
+def get_tunnel_url():
+    """Cherche l'URL Cloudflare dans le fichier de log"""
+    log_path = "static/tunnel.log"
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                # On cherche un pattern qui ressemble à https://blabla.trycloudflare.com
+                match = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", content)
+                if match:
+                    return match.group(0)
+        except Exception as e:
+            print(f"Erreur lecture URL tunnel : {e}")
+    
+    return "http://ton-ip-serveur:5000" # Valeur par défaut si échec
+
 @bot.event
 async def on_ready():
     print(f"🚀 Bot prêt : {bot.user}")
@@ -166,68 +183,57 @@ async def players_list(interaction: discord.Interaction):
 )
 @app_commands.checks.has_permissions(administrator=True)
 async def setup_event(interaction: discord.Interaction, debut: str, fin: str):
-    # 1. On utilise defer car la création d'un événement avec image est lente
     await interaction.response.defer(ephemeral=True)
 
     try:
-        # 2. Validation ET assignation des variables
         local_tz = datetime.now().astimezone().tzinfo
-        
         start_dt = datetime.strptime(debut, "%d/%m/%Y %H:%M").replace(tzinfo=local_tz)
         end_dt = datetime.strptime(fin, "%d/%m/%Y %H:%M").replace(tzinfo=local_tz)
 
         global event_started_triggered
         event_started_triggered = False
         
-        # 3. Sauvegarde dans config.json
-        config = {
-            "start_date": debut,
-            "end_date": fin
-        }
+        # Sauvegarde config
+        config = {"start_date": debut, "end_date": fin}
         with open("static/config.json", "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
-        # 4. Lecture de l'image pour la bannière
-        banner_bytes = None
-        if os.path.exists("static/colisee.jpg"):
-            print("ok")
-            with open("static/colisee.jpg", "rb") as f:
-                banner_bytes = f.read()
+        # Image
+        event_args = {
+            "name": "🏆 Colisée de la Reine Salope.",
+            "description": "Le tournoi commence ! Suivez les scores en direct sur le lien ci-dessous.",
+            "start_time": start_dt,
+            "end_time": end_dt,
+            "entity_type": EntityType.external,
+            "privacy_level": PrivacyLevel.guild_only
+        }
+        
+        # --- RÉCUPÉRATION AUTOMATIQUE DE L'URL ---
+        tunnel_url = get_tunnel_url()
+        event_args["location"] = tunnel_url
+        print(f"🔗 URL détectée pour l'événement : {tunnel_url}")
+        # -----------------------------------------
 
-        # 5. Création de l'événement Discord
-        await interaction.guild.create_scheduled_event(
-            name="🏆 Colisée de la Reine Salope.",
-            description="Le tournoi commence !",
-            start_time=start_dt,
-            end_time=end_dt,
-            entity_type=EntityType.external,
-            location="http://ton-ip-serveur:5000",
-            privacy_level=PrivacyLevel.guild_only,
-            image=banner_bytes
-        )
+        if os.path.exists("static/colisee.jpg"):
+            with open("static/colisee.jpg", "rb") as f:
+                event_args["image"] = f.read()
+
+        await interaction.guild.create_scheduled_event(**event_args)
             
-        # 6. Confirmation pour l'admin
         message_admin = (
-            f"**Événement créé et configuration sauvegardée !**\n"
-            f"Début : `{debut}`\n"
-            f"Fin : `{fin}`"
+            f"✅ **Événement créé !**\n"
+            f"📅 Début : `{debut}`\n"
+            f"🔗 Lien : `{tunnel_url}`"
         )
         await interaction.followup.send(message_admin, ephemeral=True)
 
-        # 7. Annonce publique
-        annonce = f"@everyone 📢 Le Colisée s'ouvrira le **{debut}** jusqu'à **{fin}**. Que le sang coule !"
+        annonce = f"@everyone 📢 Le Colisée ouvrira le **{debut}**. Stats en direct ici : {tunnel_url}"
         await interaction.channel.send(annonce)
         
     except ValueError:
-        await interaction.followup.send(
-            "❌ **Erreur de format !** Utilise bien : `JJ/MM/AAAA HH:MM`.", 
-            ephemeral=True 
-        )
+        await interaction.followup.send("❌ Format date invalide ! (JJ/MM/AAAA HH:MM)", ephemeral=True)
     except Exception as e:
-        print(f"Erreur critique setup_event : {e}")
-        await interaction.followup.send(
-            f"💥 Une erreur est survenue : {e}", 
-            ephemeral=True
-        )
+        print(f"Erreur setup_event : {e}")
+        await interaction.followup.send(f"💥 Erreur : {e}", ephemeral=True)
 
 bot.run(TOKEN)
