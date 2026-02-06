@@ -39,21 +39,33 @@ class MyBot(commands.Bot):
         global event_started_triggered
         
         config_path = "static/config.json"
+        
+        # On vérifie d'abord si le fichier existe
         if os.path.exists(config_path):
             try:
+                # Lecture sécurisée : on lit le texte d'abord
                 with open(config_path, "r", encoding="utf-8") as f:
-                    config = json.load(f)
+                    content = f.read().strip()
                 
-                # Conversion de la date du config
+                # Si le fichier est vide, on s'arrête là pour ce tour
+                if not content:
+                    return
+
+                config = json.loads(content)
+                
+                # Conversion de la date
                 start_dt = datetime.strptime(config["start_date"], "%d/%m/%Y %H:%M")
                 now = datetime.now()
 
-                # Si l'heure est passée et qu'on n'a pas encore déclenché
                 if now >= start_dt and not event_started_triggered:
                     event_started_triggered = True
                     await self.launch_opening_ceremony()
+                    
+            except json.JSONDecodeError:
+                # On ignore silencieusement les erreurs de JSON (fichier en cours d'écriture)
+                pass
             except Exception as e:
-                print(f"Erreur lors de la vérification auto : {e}")
+                print(f"Erreur bot check_event : {e}")
 
     async def launch_opening_ceremony(self):
         # 1. Message de guerre dans le salon textuel

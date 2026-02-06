@@ -23,29 +23,34 @@ DPM_URL = "https://dpm.lol/"
 def load_config():
     path_config = "static/config.json"
     
-    # 1. Auto-création si absent
-    if not os.path.exists(path_config):
-        default_conf = {
-            "start_date": "01/01/2030 12:00",
-            "end_date": "01/01/2030 13:00"
-        }
-        with open(path_config, "w", encoding="utf-8") as f:
-            json.dump(default_conf, f, indent=4)
-        print(f"🆕 Fichier {path_config} créé (dates par défaut en 2030).")
+    # Dates par défaut (futur lointain)
+    future = int(time.time()) + 9999999
+    default_s_dt = datetime.fromtimestamp(future)
+    default_e_dt = datetime.fromtimestamp(future + 3600)
 
-    # 2. Lecture normale
+    if not os.path.exists(path_config):
+        # Création du fichier par défaut s'il manque
+        with open(path_config, "w", encoding="utf-8") as f:
+            json.dump({
+                "start_date": "01/01/2030 12:00", 
+                "end_date": "01/01/2030 13:00"
+            }, f, indent=4)
+        return default_s_dt, default_e_dt, future, future + 3600
+
     try:
         with open(path_config, "r", encoding="utf-8") as f:
-            conf = json.load(f)
+            content = f.read().strip()
+            if not content:
+                return default_s_dt, default_e_dt, future, future + 3600
+            
+            conf = json.loads(content)
             s_dt = datetime.strptime(conf["start_date"], "%d/%m/%Y %H:%M")
             e_dt = datetime.strptime(conf["end_date"], "%d/%m/%Y %H:%M")
             return s_dt, e_dt, int(s_dt.timestamp()), int(e_dt.timestamp())
             
-    except Exception as e:
-        print(f"❌ Erreur lecture config : {e}")
-        # En cas de crash, on renvoie le futur pour ne pas stopper le script
-        future = int(time.time()) + 999999
-        return None, None, future, future
+    except Exception:
+        # En cas d'erreur, on renvoie les dates par défaut sans spammer la console
+        return default_s_dt, default_e_dt, future, future + 3600
 
 headers = {
     "X-Riot-Token": API_KEY
